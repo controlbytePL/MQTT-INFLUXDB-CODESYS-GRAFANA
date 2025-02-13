@@ -78,7 +78,7 @@
         "type": "function",
         "z": "e2d5454bb9e99b83",
         "name": "Format for InfluxDB",
-        "func": "// Check if payload is plain text and convert to structured JSON\nif (typeof msg.payload === 'string') {\n  msg.payload = {\n    value: msg.payload,\n    source: \"pump1\"\n  };\n}\n\nmsg.measurement = \"pump_status\";\nmsg.tags = { source: \"mqtt_pump\" };\nreturn msg;",
+        "func": "// Handle both numeric and string values\nif (typeof msg.payload === 'number') {\n  // Store numeric values under 'numeric_value'\n  msg.payload = {\n    numeric_value: msg.payload,\n    source: \"pump1\"\n  };\n} else {\n  // Store string values under 'string_value'\n  msg.payload = {\n    string_value: msg.payload,\n    source: \"pump1\"\n  };\n}\n\nmsg.measurement = \"pump_status\";\nmsg.tags = { source: \"mqtt_pump\" };\nreturn msg;\n",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
