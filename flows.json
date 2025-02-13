@@ -54,59 +54,60 @@
         "rejectUnauthorized": true
     },
     {
-        "id": "f4e998d5547d0e89",
+        "id": "7e2b47f52364ec03",
         "type": "mqtt in",
         "z": "e2d5454bb9e99b83",
-        "name": "pump1",
+        "name": "MQTT Pump",
         "topic": "#",
         "qos": "0",
         "datatype": "auto-detect",
         "broker": "6e3555f3a74bbd02",
         "nl": false,
-        "rap": true,
-        "rh": 0,
+        "rap": false,
         "inputs": 0,
-        "x": 250,
-        "y": 160,
+        "x": 330,
+        "y": 380,
         "wires": [
             [
-                "1b619b23efbb81ed",
-                "c5434fa59b21615d"
+                "3d8defc818e4f196"
             ]
         ]
     },
     {
-        "id": "1b619b23efbb81ed",
-        "type": "debug",
+        "id": "3d8defc818e4f196",
+        "type": "function",
         "z": "e2d5454bb9e99b83",
-        "name": "debug 1",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
+        "name": "Format for InfluxDB",
+        "func": "// Check if payload is plain text and convert to structured JSON\nif (typeof msg.payload === 'string') {\n  msg.payload = {\n    value: msg.payload,\n    source: \"pump1\"\n  };\n}\n\nmsg.measurement = \"pump_status\";\nmsg.tags = { source: \"mqtt_pump\" };\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
         "x": 580,
-        "y": 160,
-        "wires": []
+        "y": 380,
+        "wires": [
+            [
+                "6a736e2c5b1ae59e"
+            ]
+        ]
     },
     {
-        "id": "c5434fa59b21615d",
+        "id": "6a736e2c5b1ae59e",
         "type": "influxdb out",
         "z": "e2d5454bb9e99b83",
         "influxdb": "dbf835e12a2a5842",
         "name": "mqtt_logs",
         "measurement": "pump_status",
-        "precision": "",
+        "precision": "ms",
         "retentionPolicy": "",
-        "database": "database",
-        "precisionV18FluxV20": "ms",
+        "database": "mqtt_logs",
         "retentionPolicyV18Flux": "",
-        "org": "organisation",
-        "bucket": "bucket",
-        "x": 580,
-        "y": 260,
+        "org": "",
+        "bucket": "",
+        "x": 800,
+        "y": 380,
         "wires": []
     }
 ]
