@@ -39,6 +39,21 @@
         "sessionExpiry": ""
     },
     {
+        "id": "dbf835e12a2a5842",
+        "type": "influxdb",
+        "hostname": "127.0.0.1",
+        "port": "8086",
+        "protocol": "http",
+        "database": "mqtt_logs",
+        "name": "mqtt_data",
+        "usetls": false,
+        "tls": "",
+        "influxdbVersion": "1.x",
+        "url": "http://localhost:8086",
+        "timeout": "10",
+        "rejectUnauthorized": true
+    },
+    {
         "id": "f4e998d5547d0e89",
         "type": "mqtt in",
         "z": "e2d5454bb9e99b83",
@@ -55,7 +70,8 @@
         "y": 160,
         "wires": [
             [
-                "1b619b23efbb81ed"
+                "1b619b23efbb81ed",
+                "c5434fa59b21615d"
             ]
         ]
     },
@@ -71,8 +87,26 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 480,
+        "x": 580,
         "y": 160,
+        "wires": []
+    },
+    {
+        "id": "c5434fa59b21615d",
+        "type": "influxdb out",
+        "z": "e2d5454bb9e99b83",
+        "influxdb": "dbf835e12a2a5842",
+        "name": "mqtt_logs",
+        "measurement": "pump_status",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "database",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "organisation",
+        "bucket": "bucket",
+        "x": 580,
+        "y": 260,
         "wires": []
     }
 ]
