@@ -1,1 +1,28 @@
-[]
+[
+    {
+        "id": "e2d5454bb9e99b83",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "f4e998d5547d0e89",
+        "type": "mqtt in",
+        "z": "e2d5454bb9e99b83",
+        "name": "",
+        "topic": "",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 250,
+        "y": 160,
+        "wires": [
+            []
+        ]
+    }
+]
