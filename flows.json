@@ -57,7 +57,7 @@
         "id": "7e2b47f52364ec03",
         "type": "mqtt in",
         "z": "e2d5454bb9e99b83",
-        "name": "MQTT Pump",
+        "name": "MQTT OEE",
         "topic": "#",
         "qos": "0",
         "datatype": "auto-detect",
@@ -69,7 +69,8 @@
         "y": 380,
         "wires": [
             [
-                "3d8defc818e4f196"
+                "3d8defc818e4f196",
+                "56f1428395a436c5"
             ]
         ]
     },
@@ -78,7 +79,7 @@
         "type": "function",
         "z": "e2d5454bb9e99b83",
         "name": "Format for InfluxDB",
-        "func": "// Handle both numeric and string values\nif (typeof msg.payload === 'number') {\n  // Store numeric values under 'numeric_value'\n  msg.payload = {\n    numeric_value: msg.payload,\n    source: \"pump1\"\n  };\n} else {\n  // Store string values under 'string_value'\n  msg.payload = {\n    string_value: msg.payload,\n    source: \"pump1\"\n  };\n}\n\nmsg.measurement = \"pump_status\";\nmsg.tags = { source: \"mqtt_pump\" };\nreturn msg;\n",
+        "func": "// Handle both numeric and string values\nif (typeof msg.payload === 'number') {\n  // Store numeric values under 'numeric_value'\n  msg.payload = {\n    numeric_value: msg.payload,\n    source: \"OEE\"\n  };\n} else {\n  // Store string values under 'string_value'\n  msg.payload = {\n    string_value: msg.payload,\n    source: \"OEE\"\n  };\n}\n\nmsg.measurement = \"pump_status\";\nmsg.tags = { source: \"mqtt_pump\" };\nreturn msg;\n",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -108,6 +109,22 @@
         "bucket": "",
         "x": 800,
         "y": 380,
+        "wires": []
+    },
+    {
+        "id": "56f1428395a436c5",
+        "type": "debug",
+        "z": "e2d5454bb9e99b83",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 560,
+        "y": 480,
         "wires": []
     }
 ]
