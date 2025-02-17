@@ -150,14 +150,14 @@
         "type": "function",
         "z": "tab1",
         "name": "Parse MQTT Payload",
-        "func": "// Sprawdź, czy payload jest obiektem\nif (typeof msg.payload !== 'object') {\n    node.error('Nieprawidłowy format payload; oczekiwano obiektu');\n    return null;\n}\n\ntry {\n    // Przygotuj obiekt fields\n    const fields = {};\n    for (const [key, value] of Object.entries(msg.payload)) {\n        const numValue = parseFloat(value);\n        if (!isNaN(numValue)) {\n            fields[key] = numValue;\n        }\n    }\n\n    // Przygotuj obiekt tags\n    const tags = {\n        source: 'mqtt_oee',\n        location: 'factory_floor'\n    };\n\n    // Ustawienie payload dla węzła influxdb out\n    msg.payload = {\n        measurement: 'oee_data',\n        fields: fields,\n        tags: tags\n    };\n\n    return msg;\n} catch (error) {\n    node.error('Błąd podczas formatowania danych: ' + error.message);\n    return null;\n}\n",
+        "func": "// Parse and sanitize the payload\nconst fields = {};\nObject.entries(msg.payload).forEach(([key, value]) => {\n    if (key === 'machineState' && (typeof value !== 'string' || value === 'undefined')) {\n        // Set a default value if machineState is invalid\n        fields[key] = 'Unknown';\n    } else if (typeof value === 'number') {\n        fields[key] = parseFloat(value.toFixed(2)); // Round to 2 decimals\n    } else if (typeof value === 'string') {\n        fields[key] = value;\n    }\n});\n\n// Construct payload for InfluxDB\nmsg.payload = {\n    measurement: 'oee_data',\n    fields: fields,\n    tags: {\n        source: 'mqtt_oee',\n        location: 'factory_floor'\n    }\n};\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 600,
+        "x": 620,
         "y": 120,
         "wires": [
             [
@@ -178,8 +178,8 @@
         "retentionPolicyV18Flux": "",
         "org": "",
         "bucket": "",
-        "x": 840,
-        "y": 100,
+        "x": 1120,
+        "y": 120,
         "wires": []
     },
     {
@@ -194,8 +194,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 380,
-        "y": 360,
+        "x": 900,
+        "y": 120,
         "wires": [
             [
                 "9b66c4db54a1ad65",
@@ -215,8 +215,8 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 960,
-        "y": 340,
+        "x": 1100,
+        "y": 280,
         "wires": []
     }
 ]
