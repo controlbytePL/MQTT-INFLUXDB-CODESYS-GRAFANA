@@ -3,5 +3,9 @@
     "dbf835e12a2a5842": {
         "username": "admin",
         "password": "admin"
+    },
+    "influxDBConfig": {
+        "username": "admin",
+        "password": "admin"
     }
 }
