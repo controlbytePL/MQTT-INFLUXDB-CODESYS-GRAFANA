@@ -1,6 +1,6 @@
 [
     {
-        "id": "tab1",
+        "id": "0a952a5353f66963",
         "type": "tab",
         "label": "MQTT to InfluxDB",
         "disabled": false,
@@ -108,9 +108,9 @@
         "rejectUnauthorized": false
     },
     {
-        "id": "mqttIn",
+        "id": "30e9f9d45a6adb70",
         "type": "mqtt in",
-        "z": "tab1",
+        "z": "0a952a5353f66963",
         "name": "MQTT OEE",
         "topic": "#",
         "qos": "0",
@@ -121,16 +121,16 @@
         "y": 120,
         "wires": [
             [
-                "fixJSON"
+                "73cb74183a192112"
             ]
         ]
     },
     {
-        "id": "fixJSON",
+        "id": "73cb74183a192112",
         "type": "function",
-        "z": "tab1",
+        "z": "0a952a5353f66963",
         "name": "Fix JSON Format",
-        "func": "// Konwersja Buffer -> String (UTF-8)\nlet payload = msg.payload;\n\nif (Buffer.isBuffer(payload)) {\n    payload = payload.toString('utf8');\n}\n\n// Usuń niewidoczne znaki sterujące z początku i końca\npayload = payload.replace(/^\\uFEFF|\\s+$/g, '');\n\n// Usuń ewentualne zbędne przecinki\npayload = payload.replace(/,(\\s*[}\\]])/g, '$1');\n\n// Usuń wszystkie znaki niewidoczne (np. BOM)\npayload = payload.replace(/[\\u0000-\\u001F\\u007F-\\u009F]/g, '').trim();\n\ntry {\n    msg.payload = JSON.parse(payload);\n    return msg;\n} catch (e) {\n    node.error('Błąd parsowania JSON: ' + e.message + ' | ' + payload);\n    return null;\n}\n",
+        "func": "// Convert Buffer to String (UTF-8)\nlet payload = msg.payload;\n\nif (Buffer.isBuffer(payload)) {\n    payload = payload.toString('utf8');\n}\n\n// Remove invisible control characters from the beginning and end\npayload = payload.replace(/^\\uFEFF|\\s+$/g, '');\n\n// Remove unnecessary commas\npayload = payload.replace(/,(\\s*[}\\]])/g, '$1');\n\n// Remove all invisible characters (e.g., BOM)\npayload = payload.replace(/[\\u0000-\\u001F\\u007F-\\u009F]/g, '').trim();\n\ntry {\n    // Parse the string as JSON\n    msg.payload = JSON.parse(payload);\n    return msg;\n} catch (e) {\n    // Log an error if JSON parsing fails\n    node.error('JSON parsing error: ' + e.message + ' | ' + payload);\n    return null;\n}\n",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -141,14 +141,14 @@
         "y": 120,
         "wires": [
             [
-                "parsePayload"
+                "cf00d74fc1baebd4"
             ]
         ]
     },
     {
-        "id": "parsePayload",
+        "id": "cf00d74fc1baebd4",
         "type": "function",
-        "z": "tab1",
+        "z": "0a952a5353f66963",
         "name": "Parse MQTT Payload",
         "func": "// Parse and sanitize the payload\nconst fields = {};\nObject.entries(msg.payload).forEach(([key, value]) => {\n    if (key === 'machineState' && (typeof value !== 'string' || value === 'undefined')) {\n        // Set a default value if machineState is invalid\n        fields[key] = 'Unknown';\n    } else if (typeof value === 'number') {\n        fields[key] = parseFloat(value.toFixed(2)); // Round to 2 decimals\n    } else if (typeof value === 'string') {\n        fields[key] = value;\n    }\n});\n\n// Construct payload for InfluxDB\nmsg.payload = {\n    measurement: 'oee_data',\n    fields: fields,\n    tags: {\n        source: 'mqtt_oee',\n        location: 'factory_floor'\n    }\n};\nreturn msg;",
         "outputs": 1,
@@ -161,14 +161,14 @@
         "y": 120,
         "wires": [
             [
-                "d1ac1d15e21a5986"
+                "a3185bd5857f5213"
             ]
         ]
     },
     {
-        "id": "influxDBOut",
+        "id": "8ba29bbc2cced65f",
         "type": "influxdb out",
-        "z": "tab1",
+        "z": "0a952a5353f66963",
         "influxdb": "influxDBConfig",
         "name": "mqtt_logs",
         "measurement": "oee_data",
@@ -183,11 +183,11 @@
         "wires": []
     },
     {
-        "id": "d1ac1d15e21a5986",
+        "id": "a3185bd5857f5213",
         "type": "function",
-        "z": "tab1",
+        "z": "0a952a5353f66963",
         "name": "function 1",
-        "func": "// Przykład wyodrębniania poszczególnych zmiennych z msg.payload\nlet oee = msg.payload.fields.OEE;\nlet performance = msg.payload.fields.Performance;\nlet quality = msg.payload.fields.Quality;\nlet availability = msg.payload.fields.Availability;\nlet machineState = msg.payload.fields.MachineState;\nlet goodParts = msg.payload.fields.GoodParts;\nlet badParts = msg.payload.fields.BadParts;\nlet productWeight = msg.payload.fields.ProductWeight;\n\n// Możesz teraz użyć tych zmiennych według potrzeb\n// Na przykład, przypisując je do msg.payload\nmsg.payload = {\n    oee: oee,\n    performance: performance,\n    quality: quality,\n    availability: availability,\n    machineState: machineState,\n    goodParts: goodParts,\n    badParts: badParts,\n    productWeight: productWeight\n};\n\nreturn msg;",
+        "func": "// Example of extracting individual variables from msg.payload\nlet oee = msg.payload.fields.OEE;\nlet performance = msg.payload.fields.Performance;\nlet quality = msg.payload.fields.Quality;\nlet availability = msg.payload.fields.Availability;\nlet machineState = msg.payload.fields.MachineState;\nlet goodParts = msg.payload.fields.GoodParts;\nlet badParts = msg.payload.fields.BadParts;\nlet productWeight = msg.payload.fields.ProductWeight;\n\n// You can now use these variables as needed\n// For example, by assigning them to msg.payload\nmsg.payload = {\n    oee: oee,\n    performance: performance,\n    quality: quality,\n    availability: availability,\n    machineState: machineState,\n    goodParts: goodParts,\n    badParts: badParts,\n    productWeight: productWeight\n};\n\nreturn msg;\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -198,15 +198,15 @@
         "y": 120,
         "wires": [
             [
-                "9b66c4db54a1ad65",
-                "influxDBOut"
+                "e30112ca2b91beed",
+                "8ba29bbc2cced65f"
             ]
         ]
     },
     {
-        "id": "9b66c4db54a1ad65",
+        "id": "e30112ca2b91beed",
         "type": "debug",
-        "z": "tab1",
+        "z": "0a952a5353f66963",
         "name": "debug 1",
         "active": true,
         "tosidebar": true,
