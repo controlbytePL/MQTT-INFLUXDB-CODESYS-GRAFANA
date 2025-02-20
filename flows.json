@@ -1,6 +1,14 @@
 [
     {
-        "id": "0a952a5353f66963",
+        "id": "5ce7fc836f99f71a",
+        "type": "tab",
+        "label": "Flow 3",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "0b6186ea8bd2f98b",
         "type": "tab",
         "label": "MQTT to InfluxDB",
         "disabled": false,
@@ -108,27 +116,29 @@
         "rejectUnauthorized": false
     },
     {
-        "id": "30e9f9d45a6adb70",
+        "id": "bb6aef133f05b5d0",
         "type": "mqtt in",
-        "z": "0a952a5353f66963",
+        "z": "0b6186ea8bd2f98b",
         "name": "MQTT OEE",
         "topic": "#",
         "qos": "0",
         "datatype": "auto-detect",
         "broker": "mqttBroker",
+        "nl": false,
+        "rap": false,
         "inputs": 0,
         "x": 150,
         "y": 120,
         "wires": [
             [
-                "73cb74183a192112"
+                "f427c3279b5e1321"
             ]
         ]
     },
     {
-        "id": "73cb74183a192112",
+        "id": "f427c3279b5e1321",
         "type": "function",
-        "z": "0a952a5353f66963",
+        "z": "0b6186ea8bd2f98b",
         "name": "Fix JSON Format",
         "func": "// Convert Buffer to String (UTF-8)\nlet payload = msg.payload;\n\nif (Buffer.isBuffer(payload)) {\n    payload = payload.toString('utf8');\n}\n\n// Remove invisible control characters from the beginning and end\npayload = payload.replace(/^\\uFEFF|\\s+$/g, '');\n\n// Remove unnecessary commas\npayload = payload.replace(/,(\\s*[}\\]])/g, '$1');\n\n// Remove all invisible characters (e.g., BOM)\npayload = payload.replace(/[\\u0000-\\u001F\\u007F-\\u009F]/g, '').trim();\n\ntry {\n    // Parse the string as JSON\n    msg.payload = JSON.parse(payload);\n    return msg;\n} catch (e) {\n    // Log an error if JSON parsing fails\n    node.error('JSON parsing error: ' + e.message + ' | ' + payload);\n    return null;\n}\n",
         "outputs": 1,
@@ -141,14 +151,14 @@
         "y": 120,
         "wires": [
             [
-                "cf00d74fc1baebd4"
+                "72e42ab073d45ca6"
             ]
         ]
     },
     {
-        "id": "cf00d74fc1baebd4",
+        "id": "72e42ab073d45ca6",
         "type": "function",
-        "z": "0a952a5353f66963",
+        "z": "0b6186ea8bd2f98b",
         "name": "Parse MQTT Payload",
         "func": "// Parse and sanitize the payload\nconst fields = {};\nObject.entries(msg.payload).forEach(([key, value]) => {\n    if (key === 'machineState' && (typeof value !== 'string' || value === 'undefined')) {\n        // Set a default value if machineState is invalid\n        fields[key] = 'Unknown';\n    } else if (typeof value === 'number') {\n        fields[key] = parseFloat(value.toFixed(2)); // Round to 2 decimals\n    } else if (typeof value === 'string') {\n        fields[key] = value;\n    }\n});\n\n// Construct payload for InfluxDB\nmsg.payload = {\n    measurement: 'oee_data',\n    fields: fields,\n    tags: {\n        source: 'mqtt_oee',\n        location: 'factory_floor'\n    }\n};\nreturn msg;",
         "outputs": 1,
@@ -161,14 +171,14 @@
         "y": 120,
         "wires": [
             [
-                "a3185bd5857f5213"
+                "61290609a2b1980a"
             ]
         ]
     },
     {
-        "id": "8ba29bbc2cced65f",
+        "id": "b6380f29f702e44f",
         "type": "influxdb out",
-        "z": "0a952a5353f66963",
+        "z": "0b6186ea8bd2f98b",
         "influxdb": "influxDBConfig",
         "name": "mqtt_logs",
         "measurement": "oee_data",
@@ -183,9 +193,9 @@
         "wires": []
     },
     {
-        "id": "a3185bd5857f5213",
+        "id": "61290609a2b1980a",
         "type": "function",
-        "z": "0a952a5353f66963",
+        "z": "0b6186ea8bd2f98b",
         "name": "function 1",
         "func": "// Example of extracting individual variables from msg.payload\nlet oee = msg.payload.fields.OEE;\nlet performance = msg.payload.fields.Performance;\nlet quality = msg.payload.fields.Quality;\nlet availability = msg.payload.fields.Availability;\nlet machineState = msg.payload.fields.MachineState;\nlet goodParts = msg.payload.fields.GoodParts;\nlet badParts = msg.payload.fields.BadParts;\nlet productWeight = msg.payload.fields.ProductWeight;\n\n// You can now use these variables as needed\n// For example, by assigning them to msg.payload\nmsg.payload = {\n    oee: oee,\n    performance: performance,\n    quality: quality,\n    availability: availability,\n    machineState: machineState,\n    goodParts: goodParts,\n    badParts: badParts,\n    productWeight: productWeight\n};\n\nreturn msg;\n",
         "outputs": 1,
@@ -198,15 +208,15 @@
         "y": 120,
         "wires": [
             [
-                "e30112ca2b91beed",
-                "8ba29bbc2cced65f"
+                "99b6f26f086ca94c",
+                "b6380f29f702e44f"
             ]
         ]
     },
     {
-        "id": "e30112ca2b91beed",
+        "id": "99b6f26f086ca94c",
         "type": "debug",
-        "z": "0a952a5353f66963",
+        "z": "0b6186ea8bd2f98b",
         "name": "debug 1",
         "active": true,
         "tosidebar": true,
@@ -218,5 +228,56 @@
         "x": 1100,
         "y": 280,
         "wires": []
+    },
+    {
+        "id": "7ba36ff4779b8e54",
+        "type": "http request",
+        "z": "0b6186ea8bd2f98b",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://localhost:8086/query?q=CREATE DATABASE mqtt_logs",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1090,
+        "y": 400,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "0b1f2a3172e2bae5",
+        "type": "inject",
+        "z": "0b6186ea8bd2f98b",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 550,
+        "y": 400,
+        "wires": [
+            [
+                "7ba36ff4779b8e54"
+            ]
+        ]
     }
 ]
